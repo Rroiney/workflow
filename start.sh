@@ -2,17 +2,13 @@
 
 set -e
 
-echo "🚀 Starting Laravel on Railway..."
+echo "Starting Laravel on Railway..."
 
-php artisan key:generate --force || true
-
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
-php artisan view:clear
+php artisan config:clear || true
+php artisan cache:clear || true
+php artisan route:clear || true
+php artisan view:clear || true
 
 php artisan migrate --force || true
-
-php artisan config:cache
 
 exec php -S 0.0.0.0:${PORT} -t public
