@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    curl
+    curl \
+ && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql
@@ -23,4 +24,6 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+EXPOSE 8080
+
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT} -t public"]
