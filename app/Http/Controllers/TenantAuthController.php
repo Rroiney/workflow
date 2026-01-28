@@ -20,7 +20,10 @@ class TenantAuthController extends Controller
         ]);
 
         if (Auth::guard('tenant')->attempt($credentials)) {
-            return redirect("/org/{$tenant}/home");
+            // ✅ REQUIRED
+            $request->session()->regenerate();
+
+            return redirect()->route('home', ['tenant' => $tenant]);
         }
 
         return back()->withErrors([
@@ -28,9 +31,13 @@ class TenantAuthController extends Controller
         ]);
     }
 
-    public function logout($tenant)
+    public function logout(Request $request, $tenant)
     {
         Auth::guard('tenant')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect("/org/{$tenant}/login");
     }
 }
