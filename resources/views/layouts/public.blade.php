@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Welcome')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite([
+    'resources/css/app.css',
+    'resources/js/app.js'
+    ])
     <link rel="icon" type="image/png"
         href="{{ asset('assets/branding/workflow-logo.png') }}">
 </head>
