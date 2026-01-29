@@ -18,6 +18,11 @@ class SetTenantDatabase
      */
     public function handle(Request $request, \Closure $next)
     {
+
+        // ✅ PUBLIC ROUTES (no tenant required)
+        if (!$request->route() || !$request->route()->parameter('tenant')) {
+            return $next($request);
+        }
         $slug = $request->route('tenant');
 
         if (!$slug) {
