@@ -17,16 +17,20 @@ class TenantAuthController extends Controller
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'remember' => 'nullable|boolean',
         ]);
 
-        if (Auth::guard('tenant')->attempt($credentials)) {
+        $remember = $request->boolean('remember');
+        unset($credentials['remember']);
+
+        if (Auth::guard('tenant')->attempt($credentials, $remember)) {
             // ✅ REQUIRED
             $request->session()->regenerate();
 
             return redirect()->route('home', ['tenant' => $tenant]);
         }
 
-        return back()->withErrors([
+        return back()->withInput($request->only('email', 'remember'))->withErrors([
             'email' => 'Invalid credentials',
         ]);
     }

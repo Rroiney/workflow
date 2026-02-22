@@ -14,7 +14,7 @@ class TenantUserSeeder extends Seeder
             // EMPLOYEES
             [
                 'name' => 'Suman Das',
-                'email' => 'suman.das@codeclouds.com',
+                'email' => 'suman.das@primenest.com',
                 'password' => Hash::make('password'),
                 'role' => 'employee',
                 'job_title' => 'QA Engineer',
@@ -24,7 +24,7 @@ class TenantUserSeeder extends Seeder
             ],
             [
                 'name' => 'Karan Malhotra',
-                'email' => 'karan.malhotra@codeclouds.com',
+                'email' => 'karan.malhotra@primenest.com',
                 'password' => Hash::make('password'),
                 'role' => 'employee',
                 'job_title' => 'DevOps Engineer',
@@ -34,7 +34,7 @@ class TenantUserSeeder extends Seeder
             ],
             [
                 'name' => 'Ananya Gupta',
-                'email' => 'ananya.gupta@codeclouds.com',
+                'email' => 'ananya.gupta@primenest.com',
                 'password' => Hash::make('password'),
                 'role' => 'employee',
                 'job_title' => 'UI/UX Designer',

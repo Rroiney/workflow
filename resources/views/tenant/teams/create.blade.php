@@ -4,114 +4,127 @@
 
 @section('content')
 
-<div class="min-h-screen flex justify-center py-10 px-4">
+<div class="mx-auto w-full max-w-5xl px-4 py-8 md:py-10">
 
-    <form method="POST" class="w-full max-w-2xl">
+    <div class="mb-5 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-white p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h1 class="text-xl font-semibold text-slate-900 md:text-2xl">Create Team</h1>
+                <p class="mt-1 text-sm text-slate-600">Set up a team with a manager and assign employees.</p>
+            </div>
+
+            <a
+                href="{{ route('teams.index', ['tenant' => request()->route('tenant')]) }}"
+                class="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 transition hover:bg-white hover:text-slate-800">
+                Back to Teams
+            </a>
+        </div>
+    </div>
+
+    @if($errors->any())
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p class="font-medium">Please fix the following:</p>
+        <ul class="mt-1 list-disc pl-5">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    <form method="POST" class="space-y-5">
         @csrf
 
-        <div class="bg-white rounded-2xl p-8 space-y-6 ring-1 ring-slate-200/70">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
+            <div class="grid grid-cols-1 gap-5">
+                <div>
+                    <label for="name" class="mb-1 block text-sm font-medium text-slate-700">
+                        Team Name
+                    </label>
+                    <input
+                        id="name"
+                        type="text"
+                        name="name"
+                        value="{{ old('name') }}"
+                        required
+                        placeholder="Enter team name"
+                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm
+                               focus:border-indigo-500 focus:ring-indigo-500">
+                    @error('name')
+                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            {{-- HEADER --}}
-            <div>
-                <h2 class="text-lg font-medium text-slate-900 tracking-tight">
-                    Create Team
-                </h2>
-                <p class="text-sm text-slate-500 mt-1">
-                    Set up a team and assign a manager and employees
-                </p>
-            </div>
-
-            {{-- TEAM NAME --}}
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">
-                    Team Name
-                </label>
-
-                <input
-                    type="text"
-                    name="name"
-                    required
-                    placeholder="Enter team name"
-                    class="w-full rounded-lg border border-slate-200 bg-white
-                           px-3 py-2 text-sm
-                           focus:outline-none focus:ring-0
-                           focus:border-indigo-500
-                           focus:bg-indigo-50/30
-                           transition">
-            </div>
-
-            {{-- MANAGER --}}
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">
-                    Manager
-                </label>
-
-                <select
-                    name="manager_id"
-                    required
-                    class="w-full rounded-lg border border-slate-200 bg-white
-                           px-3 py-2 text-sm
-                           focus:outline-none focus:ring-0
-                           focus:border-indigo-500
-                           focus:bg-indigo-50/30
-                           transition">
-                    <option value="">Select manager</option>
-                    @foreach($managers as $manager)
-                        <option value="{{ $manager->id }}">
+                <div>
+                    <label for="manager_id" class="mb-1 block text-sm font-medium text-slate-700">
+                        Manager
+                    </label>
+                    <select
+                        id="manager_id"
+                        name="manager_id"
+                        required
+                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm
+                               focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Select manager</option>
+                        @foreach($managers as $manager)
+                        <option value="{{ $manager->id }}" @selected(old('manager_id') == $manager->id)>
                             {{ $manager->name }}
                         </option>
-                    @endforeach
-                </select>
+                        @endforeach
+                    </select>
+                    @error('manager_id')
+                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-slate-700">
+                    Assign Employees
+                </label>
+                <p class="mt-1 text-xs text-slate-500">Select one or more employees for this team.</p>
             </div>
 
-            {{-- ASSIGN EMPLOYEES --}}
-            <div>
-                <p class="text-sm font-medium text-slate-700 mb-2">
-                    Assign Employees
-                </p>
-
-                <div class="max-h-48 overflow-y-auto rounded-lg
-                            border border-slate-200 bg-slate-50/40 p-3 space-y-2">
-
+            <div class="max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     @forelse($employees as $employee)
-                        <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                name="users[]"
-                                value="{{ $employee->id }}"
-                                class="rounded border-slate-300
-                                       text-indigo-600
-                                       focus:ring-0 focus:outline-none">
-                            {{ $employee->name }}
-                        </label>
+                    <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-transparent bg-white px-3 py-2 text-sm text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50/50">
+                        <input
+                            type="checkbox"
+                            name="users[]"
+                            value="{{ $employee->id }}"
+                            @checked(collect(old('users', []))->contains($employee->id))
+                            class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="truncate">{{ $employee->name }}</span>
+                    </label>
                     @empty
-                        <p class="text-sm text-slate-500">
-                            No employees available.
-                        </p>
+                    <p class="text-sm text-slate-500">No employees available.</p>
                     @endforelse
-
                 </div>
             </div>
 
-            {{-- ACTION --}}
-            <div class="pt-4 flex items-center gap-3">
-                <button
-                    type="submit"
-                    class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg
-                           text-sm font-medium
-                           hover:bg-indigo-700 transition">
-                    Create Team
-                </button>
+            @error('users')
+            <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
+            @enderror
+            @error('users.*')
+            <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
-                <a
-                    href="{{ route('teams.index', ['tenant' => request()->route('tenant')]) }}"
-                    class="px-5 py-2.5 rounded-lg border border-slate-200
-                           text-sm text-slate-600
-                           hover:bg-slate-50 hover:text-slate-800 transition">
-                    Cancel
-                </a>
-            </div>
+        <div class="flex flex-wrap items-center justify-end gap-3">
+            <a
+                href="{{ route('teams.index', ['tenant' => request()->route('tenant')]) }}"
+                class="inline-flex items-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-slate-800">
+                Cancel
+            </a>
 
+            <button
+                type="submit"
+                class="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700">
+                Create Team
+            </button>
         </div>
     </form>
 

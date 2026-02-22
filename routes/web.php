@@ -154,5 +154,10 @@ Route::prefix('org/{tenant}')
 
             Route::delete('/documents/{document}', [TenantDocumentController::class, 'destroy'])
                 ->name('documents.destroy');
+
+            // ---------------- UPCOMING FEATURES ----------------
+            Route::get('/upcoming', function () {
+                return view('tenant.upcoming');
+            })->name('upcoming.index');
         });
     });

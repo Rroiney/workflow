@@ -1,131 +1,185 @@
 @extends('layouts.public')
 
-@section('title', 'Welcome')
+@section('title', 'WorkFlow | Home')
 
 @section('content')
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
 
-{{-- HERO SECTION WITH VISUAL --}}
-<div class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 rounded-3xl p-10 md:p-14 mb-20 text-white">
-    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_white,_transparent_70%)]"></div>
+    @keyframes client-slide {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-50%);
+        }
+    }
 
-    <div class="relative grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div x-data x-init="setTimeout(() => $el.classList.remove('opacity-0','translate-y-6'), 50)"
-             class="transition-all duration-700 opacity-0 translate-y-6">
+    .client-track {
+        animation: client-slide 24s linear infinite;
+    }
+</style>
 
-            <h1 class="text-4xl md:text-5xl font-semibold leading-tight">
-                Everything your company needs
-                <span class="block text-indigo-200">to run smoothly</span>
-            </h1>
-
-            <p class="mt-5 text-indigo-100 text-lg">
-                A modern SaaS platform to manage tasks, leaves, documents, and teams —
-                designed for clarity, speed, and scale.
-            </p>
-
-            <div class="mt-8 flex flex-wrap gap-4">
-                <a href="/org/codeclouds/login"
-                   class="bg-white text-indigo-600 px-7 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-50 transition shadow">
-                    Login
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <header class="mb-8">
+        <div class="rounded-2xl border border-indigo-100 bg-white/90 px-4 py-4 shadow-sm backdrop-blur">
+            <div class="grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto]">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-3 md:justify-self-start">
+                    <img src="{{ asset('assets/branding/workflow-logo.png') }}" alt="Workflow logo" class="h-9 w-9 rounded-lg object-cover" />
+                    <span class="text-lg font-semibold tracking-tight text-slate-800">WorkFlow</span>
                 </a>
-                <a href="/org/codeclouds/login"
-                   class="bg-indigo-500/30 backdrop-blur border border-white/30 px-7 py-3 rounded-lg text-sm font-medium hover:bg-indigo-500/40 transition">
-                    Request Demo
-                </a>
+
+                <nav class="flex flex-wrap items-center justify-center gap-2 text-sm md:justify-self-center">
+                    <button type="button" data-scroll-target="features" class="rounded-full px-4 py-2 font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Features</button>
+                    <button type="button" data-scroll-target="upcoming" class="rounded-full px-4 py-2 font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Upcoming</button>
+                    <button type="button" data-scroll-target="why-us" class="rounded-full px-4 py-2 font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Why Us</button>
+                    <button type="button" data-scroll-target="contact" class="rounded-full px-4 py-2 font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Contact</button>
+                </nav>
+
+                <div class="hidden w-28 md:block" aria-hidden="true"></div>
             </div>
         </div>
+    </header>
+<section class="relative overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 p-8 md:p-12 text-white">
+        <div class="absolute -top-20 -right-16 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-indigo-200/20 blur-2xl"></div>
 
-        {{-- HERO IMAGE --}}
-        <div class="relative hidden md:block">
-            <img src="{{ asset('landing/dashboard-preview.png') }}" alt="Dashboard preview"
-                 class="rounded-2xl shadow-2xl transform hover:scale-[1.02] transition duration-700" />
+        <div class="relative max-w-3xl">
+            <p class="text-xs uppercase tracking-[0.18em] text-indigo-100">Workflow System</p>
+            <h1 class="mt-4 text-3xl md:text-5xl font-semibold leading-tight">
+                Manage work without the chaos
+            </h1>
+            <p class="mt-4 text-indigo-100 text-base md:text-lg max-w-2xl">
+                Bring tasks, leaves, and documents into one clean workspace your team can use from day one.
+            </p>
+
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="/org/primenest/login"
+                   class="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50">
+                    Login
+                </a>
+                <button type="button" data-scroll-target="contact"
+                   class="inline-flex items-center rounded-lg border border-white/40 bg-white/10 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/20">
+                    Request Demo
+                </button>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
 
-{{-- TRUST BADGES / STATS --}}
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 text-center">
-    <div>
-        <p class="text-3xl font-semibold text-slate-800">24×7</p>
-        <p class="text-sm text-slate-500">Support Assistance</p>
-    </div>
-    <div>
-        <p class="text-3xl font-semibold text-slate-800">99.9%</p>
-        <p class="text-sm text-slate-500">System Uptime</p>
-    </div>
-    <div>
-        <p class="text-3xl font-semibold text-slate-800">Secure</p>
-        <p class="text-sm text-slate-500">Tenant Isolation</p>
-    </div>
-    <div>
-        <p class="text-3xl font-semibold text-slate-800">Scalable</p>
-        <p class="text-sm text-slate-500">For growing teams</p>
-    </div>
-</div>
+    <section id="features" class="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Task Tracking</h2>
+            <p class="mt-2 text-sm text-slate-600">Assign ownership, track progress, and close work faster.</p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Leave Workflows</h2>
+            <p class="mt-2 text-sm text-slate-600">Approvals stay transparent for managers and employees.</p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Document Hub</h2>
+            <p class="mt-2 text-sm text-slate-600">Keep files organized, searchable, and secure.</p>
+        </article>
+    </section>
 
-{{-- FEATURES WITH ILLUSTRATIONS --}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-24">
-
-    @php
-    $features = [
-        ['Task Management', 'Plan, assign, and track tasks effortlessly across teams.', 'landing/feature-tasks.png'],
-        ['Leave Management', 'Transparent leave workflows with fast approvals.', 'landing/feature-leaves.png'],
-        ['Document Hub', 'Securely store and share company documents.', 'landing/feature-docs.png'],
-    ];
-    @endphp
-
-    @foreach($features as $index => $feature)
-    <div x-data x-init="setTimeout(() => $el.classList.remove('opacity-0','translate-y-8'), {{ $index * 120 }})"
-         class="bg-white rounded-2xl shadow-sm p-8 transition-all duration-700 opacity-0 translate-y-8 hover:shadow-lg">
-
-        <img src="{{ $feature[2] }}" alt="{{ $feature[0] }}" class="w-full h-40 object-contain mb-6" />
-
-        <h3 class="font-semibold text-slate-800 mb-2">{{ $feature[0] }}</h3>
-        <p class="text-sm text-slate-500">{{ $feature[1] }}</p>
-    </div>
-    @endforeach
-
-</div>
-
-{{-- WHY CHOOSE US --}}
-<div class="bg-white rounded-3xl shadow-sm p-12 mb-24">
-    <h2 class="text-3xl font-semibold text-slate-800 mb-10 text-center">
-        Why teams choose us
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-        <div class="flex gap-4">
-            <span class="text-indigo-600 text-xl">✔</span>
-            <p class="text-slate-600">24×7 dedicated support & quick issue resolution</p>
+    <section id="clients" class="mt-14 rounded-3xl border border-indigo-100 bg-white p-8 md:p-10 overflow-hidden">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl md:text-3xl font-semibold text-slate-900">Our Clients</h3>
+            <p class="mt-2 text-sm md:text-base text-slate-600">Trusted by teams from fast-growing startups to enterprise groups.</p>
         </div>
-        <div class="flex gap-4">
-            <span class="text-indigo-600 text-xl">✔</span>
-            <p class="text-slate-600">Role-based access for admins, managers, and employees</p>
-        </div>
-        <div class="flex gap-4">
-            <span class="text-indigo-600 text-xl">✔</span>
-            <p class="text-slate-600">Secure multi-tenant architecture with isolated databases</p>
-        </div>
-        <div class="flex gap-4">
-            <span class="text-indigo-600 text-xl">✔</span>
-            <p class="text-slate-600">Minimal learning curve with intuitive UI</p>
-        </div>
-    </div>
-</div>
 
-{{-- FINAL CTA --}}
-<div class="relative overflow-hidden bg-slate-900 rounded-3xl p-14 text-center text-white">
-    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/30 to-purple-600/30"></div>
+        <div class="relative">
+            <div class="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white to-transparent z-10"></div>
+            <div class="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white to-transparent z-10"></div>
 
-    <div class="relative max-w-2xl mx-auto">
-        <h3 class="text-3xl font-semibold mb-4">Ready to transform your workplace?</h3>
-        <p class="text-slate-300 mb-8">
-            Start managing your company with clarity, confidence, and control.
+            <div class="client-track flex w-max gap-4 md:gap-6">
+                @php
+                    $clients = ['Nimbus Labs', 'BlueOrbit', 'VertexOne', 'Northline', 'AstraCore', 'CloudMint', 'PrimeNest', 'EchoSpark'];
+                    $clientLoop = array_merge($clients, $clients);
+                @endphp
+
+                @foreach($clientLoop as $client)
+                    <div class="flex h-16 min-w-[170px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-5 text-sm font-semibold text-slate-700 shadow-sm">
+                        <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-gradient-to-br from-indigo-500 to-purple-500 text-[10px] font-bold text-white mr-2">{{ strtoupper(substr($client, 0, 1)) }}</span>
+                        {{ $client }}
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <section id="why-us" class="mt-14 rounded-3xl border border-slate-200 bg-white p-8 md:p-10">
+        <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 text-center">Why Us</h3>
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+                <p class="font-semibold text-slate-800">Fast Team Adoption</p>
+                <p class="mt-2 text-sm text-slate-600">Clean UI and simple workflows reduce onboarding time.</p>
+            </div>
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+                <p class="font-semibold text-slate-800">Reliable Performance</p>
+                <p class="mt-2 text-sm text-slate-600">High availability and stable operations for everyday work.</p>
+            </div>
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+                <p class="font-semibold text-slate-800">Secure by Design</p>
+                <p class="mt-2 text-sm text-slate-600">Role-based controls and protected data handling.</p>
+            </div>
+            <div class="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+                <p class="font-semibold text-slate-800">Scales With You</p>
+                <p class="mt-2 text-sm text-slate-600">Built to support growing teams across multiple functions.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="upcoming" class="mt-14 rounded-3xl border border-indigo-200 bg-white p-8 md:p-10">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h3 class="text-2xl md:text-3xl font-semibold text-slate-900">Upcoming Features</h3>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 font-medium">Roadmap</span>
+        </div>
+        <p class="mt-3 text-slate-600">
+            We are actively building the next set of modules to improve planning, visibility, and team productivity.
         </p>
-        <a href="/org/codeclouds/login"
-           class="inline-block bg-white text-slate-900 px-9 py-3 rounded-lg text-sm font-semibold hover:bg-slate-100 transition">
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm font-semibold text-slate-800">Schedule Hub</p>
+                <p class="mt-1 text-sm text-slate-600">Calendar with national holidays, approved leaves, and team availability.</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm font-semibold text-slate-800">User Profile</p>
+                <p class="mt-1 text-sm text-slate-600">Centralized profile details, preferences, and security settings.</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm font-semibold text-slate-800">My Activity Insights</p>
+                <p class="mt-1 text-sm text-slate-600">Personal dashboard for average working hours and task trends.</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm font-semibold text-slate-800">EOD Work Reports</p>
+                <p class="mt-1 text-sm text-slate-600">Daily work report submissions with manager summaries and reminders.</p>
+            </article>
+        </div>
+    </section>
+
+    <section id="contact" class="mt-14 rounded-3xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 p-8 md:p-12 text-center">
+        <h3 class="text-2xl md:text-3xl font-semibold text-slate-900">Contact Us</h3>
+        <p class="mt-3 text-slate-600 max-w-2xl mx-auto">
+            Want a walkthrough for your team? Reach us at <span class="font-medium text-indigo-700">support@workflow.com</span> or start now.
+        </p>
+        <a href="/org/primenest/login"
+           class="mt-6 inline-flex items-center rounded-lg bg-indigo-600 px-7 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700">
             Get Started
         </a>
-    </div>
+    </section>
 </div>
-
+<script>
+    document.querySelectorAll('[data-scroll-target]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            var sectionId = el.getAttribute('data-scroll-target');
+            var target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
 @endsection

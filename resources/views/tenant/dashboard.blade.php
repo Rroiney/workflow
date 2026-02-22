@@ -131,7 +131,14 @@ $tenantData = Tenant::where('slug', request()->route('tenant'))->first();
 
             @php
             $user = auth('tenant')->user();
-            $officeIP = '103.101.212.168';
+            $normalizeIp = function ($ip) {
+            return preg_replace('/^::ffff:/', '', trim((string) $ip));
+            };
+            $officeIPs = collect(config('workflow.office_ips', []))
+            ->map($normalizeIp)
+            ->filter()
+            ->values()
+            ->all();
             $today = now()->toDateString();
 
             $team = null;
@@ -180,7 +187,7 @@ $tenantData = Tenant::where('slug', request()->route('tenant'))->first();
                 ) {
                 $status = 'Unavailable';
                 $statusClass = 'bg-slate-100 text-slate-500';
-                } elseif ($member->last_login_ip === $officeIP) {
+                } elseif (in_array($normalizeIp($member->last_login_ip), $officeIPs, true)) {
                 $status = 'WFO';
                 $statusClass = 'bg-emerald-100 text-emerald-700';
                 } else {

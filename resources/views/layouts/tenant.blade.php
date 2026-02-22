@@ -151,10 +151,10 @@ return '
     <aside class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 flex flex-col z-50">
 
         <!-- LOGO -->
-        <div class="px-6 py-5 flex items-center justify-center">
+        <div class="px-4 py-4 flex items-center justify-center min-h-[88px]">
             @if($tenantData && $tenantData->company_logo_path)
             <img src="{{ asset('storage/' . $tenantData->company_logo_path) }}"
-                class="h-8 object-contain"
+                class="max-h-16 w-full max-w-[220px] object-contain"
                 alt="Company Logo">
             @else
             <span class="text-2xl font-bold text-indigo-600">
@@ -183,6 +183,18 @@ return '
             {!! navLink('teams.index', 'Teams', $tenantSlug, 'icons/sidebar/teams.png') !!}
             @endif
 
+            <div class="pt-4">
+                <p class="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                    Coming Soon
+                </p>
+
+                <a href="{{ route('upcoming.index', ['tenant' => $tenantSlug]) }}"
+                    class="flex items-center justify-between gap-3 px-4 py-2 rounded-lg transition {{ request()->routeIs('upcoming.index') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'hover:bg-slate-100' }}">
+                    <span class="text-sm">Upcoming Features</span>
+                    <span class="text-sm leading-none" aria-label="Work in progress" title="Work in progress">🛠</span>
+                </a>
+            </div>
+
         </nav>
 
     </aside>
@@ -192,115 +204,98 @@ return '
 
         <!-- HEADER -->
         <header class="sticky top-0 z-40 bg-white px-8 py-4
-               flex justify-between items-center
+               flex justify-end items-center
                border-b border-slate-200">
 
-            <!-- LEFT: STATUS SECTION -->
-            <div class="flex items-center gap-2">
+            @php
+            $user = auth('tenant')->user();
+            $normalizeIp = function ($ip) {
+            return preg_replace('/^::ffff:/', '', trim((string) $ip));
+            };
+            $officeIPs = collect(config('workflow.office_ips', []))
+            ->map($normalizeIp)
+            ->filter()
+            ->values()
+            ->all();
+            $lastLoginIp = $normalizeIp($user->last_login_ip);
+            $today = now()->toDateString();
 
-                <!-- Label -->
-                <span class="text-sm font-medium text-slate-600">
-                    Status
-                </span>
+            if (!$user->last_login_at || $user->last_login_at->toDateString() !== $today) {
+            $status = 'Unavailable';
+            $statusClass = 'bg-slate-100 text-slate-500';
+            } elseif (in_array($lastLoginIp, $officeIPs, true)) {
+            $status = 'WFO';
+            $statusClass = 'bg-emerald-100 text-emerald-700';
+            } else {
+            $status = 'WFH';
+            $statusClass = 'bg-indigo-100 text-indigo-700';
+            }
+            @endphp
 
-                @php
-                $user = auth('tenant')->user();
-                $officeIP = '103.101.212.168'; // move to config later
-                $today = now()->toDateString();
+            <!-- RIGHT: USER DROPDOWN (UNCHANGED) -->
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 text-sm">
+                    <span class="font-medium text-slate-700">Status</span>
 
-                if (!$user->last_login_at || $user->last_login_at->toDateString() !== $today) {
-                $status = 'Unavailable';
-                $statusClass = 'bg-slate-100 text-slate-500';
-                } elseif ($user->last_login_ip === $officeIP) {
-                $status = 'WFO';
-                $statusClass = 'bg-emerald-100 text-emerald-700';
-                } else {
-                $status = 'WFH';
-                $statusClass = 'bg-indigo-100 text-indigo-700';
-                }
-                @endphp
+                    <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium {{ $statusClass }}">
+                        {{ $status }}
+                    </span>
 
+                    <div class="relative group flex items-center ml-1">
+                        <img
+                            src="{{ asset('icons/information.png') }}"
+                            alt="Info"
+                            class="w-4 h-4 opacity-80 hover:opacity-100 cursor-pointer">
 
-                <!-- Status Pill -->
-                <span
-                    class="inline-flex items-center
-           px-3 py-1
-           rounded-full
-           text-sm font-medium
-           {{ $statusClass }}">
-                    {{ $status }}
-                </span>
-
-
-                <!-- Info Icon (Image-based) -->
-                <div class="relative group flex items-center">
-                    <img
-                        src="{{ asset('icons/information.png') }}"
-                        alt="Info"
-                        class="w-4 h-4 opacity-80
-                   hover:opacity-100 cursor-pointer">
-
-                    <!-- Tooltip -->
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 top-6
-                   whitespace-nowrap
-                   bg-slate-800 text-white
-                   text-xs px-2 py-1 rounded
-                   opacity-0 group-hover:opacity-100
-                   transition pointer-events-none">
-                        Status is based on login activity
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 top-6
+                               whitespace-nowrap
+                               bg-slate-800 text-white
+                               text-xs px-2 py-1 rounded
+                               opacity-0 group-hover:opacity-100
+                               transition pointer-events-none">
+                            Status is based on login activity
+                        </div>
                     </div>
                 </div>
 
-            </div>
+                <span class="hidden sm:block h-8 w-px bg-slate-200"></span>
 
+                <div x-data="{ open: false }" class="relative">
+                    <button
+                        @click="open = !open"
+                        class="flex items-center gap-3 text-sm font-medium
+                       text-slate-700 hover:text-indigo-600 cursor-pointer">
 
+                        {{-- AVATAR --}}
+                        @if($avatar)
+                        <img src="{{ $avatar }}"
+                            class="w-8 h-8 rounded-full object-cover">
+                        @else
+                        <div class="w-8 h-8 rounded-full bg-indigo-100
+                                flex items-center justify-center
+                                text-indigo-600 font-semibold text-xs">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                        @endif
 
+                        <span>Hello, <span class="font-semibold text-slate-900">{{ $user->name }}</span></span>
+                    </button>
 
+                    <div x-show="open" x-cloak @click.outside="open = false"
+                        class="absolute right-0 mt-2 w-40 bg-white
+                        rounded-xl shadow-lg border border-slate-100 z-50">
 
-            <!-- RIGHT: USER DROPDOWN (UNCHANGED) -->
-            <div x-data="{ open: false }" class="relative">
-                <button
-                    @click="open = !open"
-                    class="flex items-center gap-3 text-sm font-medium
-                   text-slate-700 hover:text-indigo-600 cursor-pointer">
-
-                    {{-- AVATAR --}}
-                    @if($avatar)
-                    <img src="{{ $avatar }}"
-                        class="w-8 h-8 rounded-full object-cover">
-                    @else
-                    <div class="w-8 h-8 rounded-full bg-indigo-100
-                            flex items-center justify-center
-                            text-indigo-600 font-semibold text-xs">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                        <form method="POST"
+                            action="{{ url('/org/' . $tenantSlug . '/logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full text-left px-4 py-2 text-sm
+                                   text-red-600 hover:bg-red-50 rounded-xl">
+                                Logout
+                            </button>
+                        </form>
                     </div>
-                    @endif
-
-                    <span>Hello, {{ $user->name }}</span>
-
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="w-4 h-4 text-slate-400"
-                        fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                </button>
-
-                <div x-show="open" x-cloak @click.outside="open = false"
-                    class="absolute right-0 mt-2 w-40 bg-white
-                    rounded-xl shadow-lg border border-slate-100 z-50">
-
-                    <form method="POST"
-                        action="{{ url('/org/' . $tenantSlug . '/logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="w-full text-left px-4 py-2 text-sm
-                               text-red-600 hover:bg-red-50 rounded-xl">
-                            Logout
-                        </button>
-                    </form>
                 </div>
             </div>
 
