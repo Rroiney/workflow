@@ -128,12 +128,6 @@ Route::prefix('org/{tenant}')
                     [TenantLeaveController::class, 'updateStatus']
                 );
             });
-            Route::middleware('tenant.role:manager,admin')->group(function () {
-                Route::post(
-                    '/leaves/{leaveId}/status',
-                    [TenantLeaveController::class, 'updateStatus']
-                );
-            });
 
             //---------------- DOCUMENTS ----------------
             Route::get('/documents', [TenantDocumentController::class, 'index'])
