@@ -23,7 +23,7 @@
     </div>
 
     <form method="POST"
-        action="/org/{{ request()->route('tenant') }}/leaves/apply/submit"
+        action="{{ route('leaves.store', ['tenant' => request()->route('tenant')]) }}"
         class="space-y-5">
         @csrf
 

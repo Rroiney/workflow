@@ -106,7 +106,7 @@ class TenantTeamController extends Controller
         $managers = TenantUser::where('role', 'manager')->get();
         $employees = TenantUser::where('role', 'employee')->get();
 
-        $teamUserIds = $team->users()->pluck('users.id')->toArray();
+        $teamUserIds = $team->users->pluck('id')->toArray();
 
         return view('tenant.teams.edit', compact(
             'team',

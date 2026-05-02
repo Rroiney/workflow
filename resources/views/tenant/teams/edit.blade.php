@@ -14,7 +14,7 @@
             </div>
 
             <a
-                href="/org/{{ request()->route('tenant') }}/teams"
+                href="{{ route('teams.index', ['tenant' => request()->route('tenant')]) }}"
                 class="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 transition hover:bg-white hover:text-slate-800">
                 Back to Teams
             </a>
@@ -39,7 +39,7 @@
     @endif
 
     <form method="POST"
-        action="/org/{{ request()->route('tenant') }}/teams/{{ $team->id }}"
+        action="{{ route('teams.update', ['tenant' => request()->route('tenant'), 'teamId' => $team->id]) }}"
         class="space-y-5">
         @csrf
         @method('PUT')
@@ -130,7 +130,7 @@
 
         <div class="flex flex-wrap items-center justify-end gap-3">
             <a
-                href="/org/{{ request()->route('tenant') }}/teams"
+                href="{{ route('teams.index', ['tenant' => request()->route('tenant')]) }}"
                 class="inline-flex items-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-slate-800">
                 Cancel
             </a>

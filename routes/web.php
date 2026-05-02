@@ -51,7 +51,8 @@ Route::prefix('org/{tenant}')
                 ->name('teams.edit');
 
             // Update team (PUT)
-            Route::put('/teams/{teamId}', [TenantTeamController::class, 'update']);
+            Route::put('/teams/{teamId}', [TenantTeamController::class, 'update'])
+                ->name('teams.update');
 
             // List teams
             Route::get('/teams', [TenantTeamController::class, 'index'])
@@ -62,7 +63,8 @@ Route::prefix('org/{tenant}')
                 ->name('teams.create');
                 
             // Store team (POST)
-            Route::post('/teams/create', [TenantTeamController::class, 'store']);
+            Route::post('/teams/create', [TenantTeamController::class, 'store'])
+                ->name('teams.store');
         });
 
         Route::middleware(['auth:tenant'])->group(function () {
@@ -82,7 +84,8 @@ Route::prefix('org/{tenant}')
                 ->name('tasks.store');
 
             // Update task status
-            Route::post('/tasks/{taskId}/status', [TenantTaskController::class, 'updateStatus']);
+            Route::post('/tasks/{task}/status', [TenantTaskController::class, 'updateStatus'])
+                ->name('tasks.status');
 
             // Edit task form
             Route::get('/tasks/{task}/edit', [TenantTaskController::class, 'edit'])
@@ -119,14 +122,13 @@ Route::prefix('org/{tenant}')
             Route::middleware('tenant.role:employee,manager')->group(function () {
                 Route::get('/leaves/apply', [TenantLeaveController::class, 'create'])
                     ->name('leaves.apply');
-                Route::post('/leaves/apply/submit', [TenantLeaveController::class, 'store']);
+                Route::post('/leaves/apply/submit', [TenantLeaveController::class, 'store'])
+                    ->name('leaves.store');
             });
 
             Route::middleware('tenant.role:manager,admin')->group(function () {
-                Route::post(
-                    '/leaves/{leaveId}/status',
-                    [TenantLeaveController::class, 'updateStatus']
-                );
+               Route::post('/leaves/{leave}/status', [TenantLeaveController::class, 'updateStatus'])
+                    ->name('leaves.status');
             });
 
             //---------------- DOCUMENTS ----------------
@@ -136,7 +138,8 @@ Route::prefix('org/{tenant}')
             Route::get('/documents/upload', [TenantDocumentController::class, 'create'])
                 ->name('documents.upload');
 
-            Route::post('/documents/upload', [TenantDocumentController::class, 'store']);
+            Route::post('/documents/upload', [TenantDocumentController::class, 'store'])
+                ->name('documents.store');
 
             Route::get('/documents/{document}/download', [TenantDocumentController::class, 'download'])
                 ->name('documents.download');

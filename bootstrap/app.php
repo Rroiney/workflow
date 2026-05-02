@@ -5,7 +5,9 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\SetTenantDatabase;
 
-return Application::configure(basePath: dirname(__DIR__))
+return Application::configure(
+    basePath: dirname(__DIR__)
+)
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
@@ -13,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+        // Prepend tenant database middleware to web group
         $middleware->prependToGroup('web', SetTenantDatabase::class);
 
         // Middleware aliases
@@ -23,7 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Redirect unauthenticated users
         $middleware->redirectGuestsTo(function ($request) {
-
             $tenant = $request->route('tenant');
 
             if ($tenant) {

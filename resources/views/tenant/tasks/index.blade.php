@@ -175,7 +175,7 @@ $taskCount = $tasks->count();
 
                     <td class="p-3">
                         @if($isManagerOrAdmin)
-                        <form method="POST" action="/org/{{ request()->route('tenant') }}/tasks/{{ $task->id }}/status">
+                        <form method="POST" action="{{ route('tasks.status', ['tenant' => request()->route('tenant'),'task' => $task->id]) }}">
                             @csrf
                             <select
                                 name="status"

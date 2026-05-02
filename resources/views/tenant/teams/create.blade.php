@@ -32,7 +32,7 @@
     </div>
     @endif
 
-    <form method="POST" class="space-y-5">
+    <form method="POST" action="{{ route('teams.store', ['tenant' => request()->route('tenant')]) }}" class="space-y-5">
         @csrf
 
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">

@@ -39,7 +39,7 @@ $showBalances = in_array($user->role, ['employee', 'manager']) && $balances?->is
 
             @if($canApply)
             <a
-                href="/org/{{ request()->route('tenant') }}/leaves/apply"
+                href="{{ route('leaves.apply', ['tenant' => request()->route('tenant')]) }}"
                 class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">
                 Apply Leave
             </a>
@@ -199,7 +199,7 @@ $showBalances = in_array($user->role, ['employee', 'manager']) && $balances?->is
                         </td>
 
                         <td class="p-3">
-                            <form method="POST" action="/org/{{ request()->route('tenant') }}/leaves/{{ $leave->id }}/status">
+                            <form method="POST" action="{{ route('leaves.status', ['tenant' => request()->route('tenant'), 'leave' => $leave->id]) }}">
                                 @csrf
                                 <select
                                     name="status"

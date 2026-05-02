@@ -46,7 +46,7 @@ $docCount = $documents->count();
             </div>
 
             <a
-                href="/org/{{ request()->route('tenant') }}/documents/upload"
+                href="{{ route('documents.upload', ['tenant' => request()->route('tenant')]) }}"
                 class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">
                 Upload Document
             </a>

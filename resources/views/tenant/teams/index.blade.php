@@ -43,7 +43,7 @@ $teamCount = $teams->count();
             </div>
 
             @if($isAdmin)
-            <a href="{{ url()->current() }}/create"
+            <a href="{{ route('teams.create', ['tenant' => request()->route('tenant')]) }}"
                 class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">
                 + Create Team
             </a>
@@ -108,7 +108,7 @@ $teamCount = $teams->count();
                             </button>
 
                             <a
-                                href="/org/{{ request()->route('tenant') }}/teams/{{ $team->id }}/edit"
+                                href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'teamId' => $team->id ]) }}"
                                 title="Edit Team"
                                 aria-label="Edit team"
                                 class="rounded p-1 transition hover:bg-slate-200">
@@ -159,7 +159,7 @@ $teamCount = $teams->count();
                 </button>
 
                 <a
-                    href="/org/{{ request()->route('tenant') }}/teams/{{ $team->id }}/edit"
+                    href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'teamId' => $team->id ]) }}"
                     title="Edit Team"
                     aria-label="Edit team"
                     class="rounded p-1 transition hover:bg-slate-200">

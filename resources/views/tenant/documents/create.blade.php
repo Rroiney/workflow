@@ -24,7 +24,7 @@
 
     <form method="POST"
         enctype="multipart/form-data"
-        action="/org/{{ request()->route('tenant') }}/documents/upload"
+        action="{{ route('documents.store', ['tenant' => request()->route('tenant')]) }}"
         class="space-y-5">
         @csrf
 

@@ -56,7 +56,7 @@
             </p>
 
             <div class="mt-8 flex flex-wrap gap-3">
-                <a href="/org/primenest/login"
+                <a href="{{ url('org/primenest/login') }}"
                    class="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-50">
                     Login
                 </a>
