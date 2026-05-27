@@ -1,0 +1,9 @@
+---
+deployment:
+  tasks:
+    - export APPPATH=/home/stagingit/workflow-app
+    - export WEBPATH=/home/stagingit/public_html/akash_tarafdar/workflow
+    - /bin/mkdir -p $APPPATH
+    - /bin/mkdir -p $WEBPATH
+    - /usr/bin/rsync -av --delete --exclude='.git' --exclude='.env' --exclude='node_modules' --exclude='storage/*' --exclude='bootstrap/cache/*' --exclude='public' ./ $APPPATH/
+    - /usr/bin/rsync -av --delete --exclude='storage' public/ $WEBPATH/
