@@ -23,8 +23,8 @@
 </style>
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-    <header class="mb-8">
-        <div class="rounded-2xl border border-indigo-100 bg-white/90 px-4 py-4 shadow-sm backdrop-blur">
+    <header class="relative z-[120] mb-8">
+        <div class="relative overflow-visible rounded-2xl border border-indigo-100 bg-white/90 px-4 py-4 shadow-sm backdrop-blur">
             <div class="grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto]">
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-3 md:justify-self-start">
                     <img src="{{ asset('assets/branding/workflow-logo.png') }}" alt="Workflow logo" class="h-9 w-9 rounded-lg object-cover" />
@@ -38,7 +38,107 @@
                     <button type="button" data-scroll-target="contact" class="rounded-full px-4 py-2 font-medium text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700">Contact</button>
                 </nav>
 
-                <div class="hidden w-28 md:block" aria-hidden="true"></div>
+                <div
+                    x-data="{
+                        open: false,
+                        preference: 'system',
+                        effectiveTheme: 'light',
+                        syncTheme() {
+                            this.preference = window.workflowTheme?.getPreference?.() ?? 'system';
+                            this.effectiveTheme = window.workflowTheme?.getEffectiveTheme?.() ?? 'light';
+                        },
+                        setTheme(preference) {
+                            window.workflowTheme?.setPreference?.(preference);
+                            this.syncTheme();
+                            this.open = false;
+                        }
+                    }"
+                    x-init="
+                        syncTheme();
+                        window.addEventListener('workflow-theme-changed', () => syncTheme());
+                    "
+                    class="relative z-[130] md:justify-self-end">
+                    <button
+                        type="button"
+                        @click="open = !open"
+                        class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+                        :title="preference === 'system' ? 'System theme' : (preference === 'dark' ? 'Dark theme' : 'Light theme')"
+                        aria-label="Theme switcher">
+                        <svg x-show="preference === 'light'" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
+                        </svg>
+
+                        <svg x-show="preference === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 14.7A9 9 0 0 1 9.3 3a1 1 0 0 0-1.26 1.26A7 7 0 1 0 19.74 16a1 1 0 0 0 1.26-1.3Z"></path>
+                        </svg>
+
+                        <div x-show="preference === 'system'" x-cloak class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                                <path d="M8 20h8M12 16v4"></path>
+                            </svg>
+                            <span class="absolute -right-1 -top-1 inline-flex h-2.5 w-2.5 rounded-full"
+                                :class="effectiveTheme === 'dark' ? 'bg-indigo-400' : 'bg-amber-400'"></span>
+                        </div>
+                    </button>
+
+                    <div
+                        x-show="open"
+                        x-cloak
+                        @click.outside="open = false"
+                        x-transition.origin.top.right
+                        class="absolute right-0 top-full mt-3 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-[140]">
+                        <div class="mb-2 px-2 pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            Theme
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <button
+                                type="button"
+                                @click="setTheme('light')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'light' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
+                                </svg>
+                                <span class="text-[11px] font-medium">Light</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="setTheme('dark')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'dark' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 14.7A9 9 0 0 1 9.3 3a1 1 0 0 0-1.26 1.26A7 7 0 1 0 19.74 16a1 1 0 0 0 1.26-1.3Z"></path>
+                                </svg>
+                                <span class="text-[11px] font-medium">Dark</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="setTheme('system')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'system' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <div class="relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                                        <path d="M8 20h8M12 16v4"></path>
+                                    </svg>
+                                    <span class="absolute -right-1 -top-1 inline-flex h-2.5 w-2.5 rounded-full"
+                                        :class="effectiveTheme === 'dark' ? 'bg-indigo-400' : 'bg-amber-400'"></span>
+                                </div>
+                                <span class="text-[11px] font-medium">Auto</span>
+                            </button>
+                        </div>
+
+                        <p class="mt-2 px-2 pb-1 text-center text-[11px] text-slate-400" x-show="preference === 'system'" x-cloak>
+                            Using <span x-text="effectiveTheme"></span> from your device
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </header>

@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Welcome')</title>
+    <meta name="color-scheme" content="light dark">
+    <script>
+        (function() {
+            const storageKey = 'workflow-theme-preference';
+            const storedPreference = localStorage.getItem(storageKey);
+            const preference = ['light', 'dark', 'system'].includes(storedPreference) ? storedPreference : 'system';
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const effectiveTheme = preference === 'system' ? systemTheme : preference;
+            document.documentElement.classList.toggle('dark', effectiveTheme === 'dark');
+            document.documentElement.dataset.theme = effectiveTheme;
+            document.documentElement.style.colorScheme = effectiveTheme;
+        })();
+    </script>
     @vite([
     'resources/js/app.js',
     ])

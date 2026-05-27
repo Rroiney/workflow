@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->table('leave_requests', function (Blueprint $table) {
-            $table->foreignId('leave_type_id')->after('user_id');
-        });
+        if (!Schema::connection('tenant')->hasColumn('leave_requests', 'leave_type_id')) {
+            Schema::connection('tenant')->table('leave_requests', function (Blueprint $table) {
+                $table->foreignId('leave_type_id')->after('user_id');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->table('leave_requests', function (Blueprint $table) {
-            $table->dropColumn('leave_type_id');
-        });
+        if (Schema::connection('tenant')->hasColumn('leave_requests', 'leave_type_id')) {
+            Schema::connection('tenant')->table('leave_requests', function (Blueprint $table) {
+                $table->dropColumn('leave_type_id');
+            });
+        }
     }
 };

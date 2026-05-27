@@ -39,7 +39,7 @@
     @endif
 
     <form method="POST"
-        action="{{ route('teams.update', ['tenant' => request()->route('tenant'), 'teamId' => $team->id]) }}"
+        action="{{ route('teams.update', ['tenant' => request()->route('tenant'), 'team' => $team->id]) }}"
         class="space-y-5">
         @csrf
         @method('PUT')

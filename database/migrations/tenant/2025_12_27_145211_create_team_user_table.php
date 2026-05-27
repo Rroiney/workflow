@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('team_user')) {
+            return;
+        }
+
         Schema::connection('tenant')->create('team_user', function (Blueprint $table) {
             $table->id();
             $table->foreignId('team_id');

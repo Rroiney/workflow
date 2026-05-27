@@ -10,16 +10,29 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('job_title')->nullable()->after('role');
-            $table->string('profile_photo_path')->nullable()->after('job_title');
-        });
+        if (!Schema::connection('tenant')->hasColumn('users', 'job_title')) {
+            Schema::connection('tenant')->table('users', function (Blueprint $table) {
+                $table->string('job_title')->nullable()->after('role');
+            });
+        }
+
+        if (!Schema::connection('tenant')->hasColumn('users', 'profile_photo_path')) {
+            Schema::connection('tenant')->table('users', function (Blueprint $table) {
+                $table->string('profile_photo_path')->nullable()->after('job_title');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['job_title', 'profile_photo_path']);
+        Schema::connection('tenant')->table('users', function (Blueprint $table) {
+            if (Schema::connection('tenant')->hasColumn('users', 'profile_photo_path')) {
+                $table->dropColumn('profile_photo_path');
+            }
+
+            if (Schema::connection('tenant')->hasColumn('users', 'job_title')) {
+                $table->dropColumn('job_title');
+            }
         });
     }
 };

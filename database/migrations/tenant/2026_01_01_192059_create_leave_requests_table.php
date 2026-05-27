@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('leave_requests')) {
+            return;
+        }
+
         Schema::connection('tenant')->create('leave_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');

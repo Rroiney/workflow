@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\TenantUser;
 
 class Document extends Model
 {
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'uploaded_by',
         'title',
@@ -26,7 +27,7 @@ class Document extends Model
 
     public function assignedUser()
     {
-        return $this->belongsTo(User::class, 'assigned_user_id');
+        return $this->belongsTo(TenantUser::class, 'assigned_user_id');
     }
 
     public function team()

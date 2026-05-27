@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('leave_types')) {
+            return;
+        }
+
         Schema::connection('tenant')->create('leave_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');              // EL, CL, SL

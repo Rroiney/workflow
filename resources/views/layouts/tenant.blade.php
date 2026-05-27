@@ -15,25 +15,27 @@ $tenantSlug = request()->route('tenant');
 $tenantData = Tenant::where('slug', $tenantSlug)->first();
 
 /* ---------------- NAV LINK HELPER ---------------- */
+if (!function_exists('navLink')) {
 function navLink($routeName, $label, $tenantSlug, $iconPath) {
 
-$base = str_contains($routeName, '.')
-? explode('.', $routeName)[0]
-: $routeName;
+    $base = str_contains($routeName, '.')
+    ? explode('.', $routeName)[0]
+    : $routeName;
 
-$active = request()->routeIs($base . '.*') || request()->routeIs($routeName)
-? 'bg-indigo-50 text-indigo-600 font-medium'
-: 'hover:bg-slate-100';
+    $active = request()->routeIs($base . '.*') || request()->routeIs($routeName)
+    ? 'bg-indigo-50 text-indigo-600 font-medium'
+    : 'hover:bg-slate-100';
 
-return '
-<a href="' . route($routeName, ['tenant' => $tenantSlug]) . '"
-    class="flex items-center gap-3 px-4 py-2 rounded-lg transition ' . $active . '">
+    return '
+    <a href="' . route($routeName, ['tenant' => $tenantSlug]) . '"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition ' . $active . '">
 
-    <img src="' . asset($iconPath) . '"
-        class="w-5 h-5 opacity-70">
+        <img src="' . asset($iconPath) . '"
+            class="w-5 h-5 opacity-70">
 
-    <span>' . $label . '</span>
-</a>';
+        <span>' . $label . '</span>
+    </a>';
+}
 }
 
 @endphp
@@ -57,6 +59,20 @@ return '
         content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible"
         content="ie=edge">
+    <meta name="color-scheme" content="light dark">
+
+    <script>
+        (function() {
+            const storageKey = 'workflow-theme-preference';
+            const storedPreference = localStorage.getItem(storageKey);
+            const preference = ['light', 'dark', 'system'].includes(storedPreference) ? storedPreference : 'system';
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const effectiveTheme = preference === 'system' ? systemTheme : preference;
+            document.documentElement.classList.toggle('dark', effectiveTheme === 'dark');
+            document.documentElement.dataset.theme = effectiveTheme;
+            document.documentElement.style.colorScheme = effectiveTheme;
+        })();
+    </script>
 
 
     {{-- Laravel 12 + Tailwind v4 --}}
@@ -261,6 +277,107 @@ return '
 
                 <span class="hidden sm:block h-8 w-px bg-slate-200"></span>
 
+                <div
+                    x-data="{
+                        open: false,
+                        preference: 'system',
+                        effectiveTheme: 'light',
+                        syncTheme() {
+                            this.preference = window.workflowTheme?.getPreference?.() ?? 'system';
+                            this.effectiveTheme = window.workflowTheme?.getEffectiveTheme?.() ?? 'light';
+                        },
+                        setTheme(preference) {
+                            window.workflowTheme?.setPreference?.(preference);
+                            this.syncTheme();
+                            this.open = false;
+                        }
+                    }"
+                    x-init="
+                        syncTheme();
+                        window.addEventListener('workflow-theme-changed', () => syncTheme());
+                    "
+                    class="relative">
+                    <button
+                        type="button"
+                        @click="open = !open"
+                        class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+                        :title="preference === 'system' ? 'System theme' : (preference === 'dark' ? 'Dark theme' : 'Light theme')"
+                        aria-label="Theme switcher">
+                        <svg x-show="preference === 'light'" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
+                        </svg>
+
+                        <svg x-show="preference === 'dark'" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 14.7A9 9 0 0 1 9.3 3a1 1 0 0 0-1.26 1.26A7 7 0 1 0 19.74 16a1 1 0 0 0 1.26-1.3Z"></path>
+                        </svg>
+
+                        <div x-show="preference === 'system'" x-cloak class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                                <path d="M8 20h8M12 16v4"></path>
+                            </svg>
+                            <span class="absolute -right-1 -top-1 inline-flex h-2.5 w-2.5 rounded-full"
+                                :class="effectiveTheme === 'dark' ? 'bg-indigo-400' : 'bg-amber-400'"></span>
+                        </div>
+                    </button>
+
+                    <div
+                        x-show="open"
+                        x-cloak
+                        @click.outside="open = false"
+                        class="absolute right-0 mt-2 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50">
+                        <div class="mb-2 px-2 pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            Theme
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <button
+                                type="button"
+                                @click="setTheme('light')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'light' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"></path>
+                                </svg>
+                                <span class="text-[11px] font-medium">Light</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="setTheme('dark')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'dark' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 14.7A9 9 0 0 1 9.3 3a1 1 0 0 0-1.26 1.26A7 7 0 1 0 19.74 16a1 1 0 0 0 1.26-1.3Z"></path>
+                                </svg>
+                                <span class="text-[11px] font-medium">Dark</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                @click="setTheme('system')"
+                                class="flex flex-col items-center gap-2 rounded-xl px-3 py-3 transition hover:bg-slate-50"
+                                :class="preference === 'system' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200' : 'text-slate-700'">
+                                <div class="relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                                        <path d="M8 20h8M12 16v4"></path>
+                                    </svg>
+                                    <span class="absolute -right-1 -top-1 inline-flex h-2.5 w-2.5 rounded-full"
+                                        :class="effectiveTheme === 'dark' ? 'bg-indigo-400' : 'bg-amber-400'"></span>
+                                </div>
+                                <span class="text-[11px] font-medium">Auto</span>
+                            </button>
+                        </div>
+
+                        <p class="mt-2 px-2 pb-1 text-center text-[11px] text-slate-400" x-show="preference === 'system'" x-cloak>
+                            Using <span x-text="effectiveTheme"></span> from your device
+                        </p>
+                    </div>
+                </div>
+
                 <div x-data="{ open: false }" class="relative">
                     <button
                         @click="open = !open"
@@ -343,6 +460,7 @@ return '
 
                 const href = link.getAttribute('href');
                 if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
+                if (link.hasAttribute('download') || link.dataset.skipLoader === 'true') return;
 
                 loader.style.display = "flex";
                 loader.style.opacity = "1";

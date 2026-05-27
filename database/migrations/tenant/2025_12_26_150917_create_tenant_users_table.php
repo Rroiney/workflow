@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('users')) {
+            return;
+        }
+
         Schema::connection('tenant')->create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');

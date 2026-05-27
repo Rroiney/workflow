@@ -18,6 +18,11 @@ class LeaveRequest extends Model
         'approved_by',
     ];
 
+    protected $casts = [
+        'from_date' => 'date',
+        'to_date' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(TenantUser::class);

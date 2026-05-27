@@ -11,6 +11,10 @@ return new class extends Migration
 
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('task_user')) {
+            return;
+        }
+
         Schema::create('task_user', function (Blueprint $table) {
             $table->id();
 

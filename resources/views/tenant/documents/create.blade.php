@@ -93,18 +93,18 @@
                                focus:border-indigo-500 focus:ring-indigo-500">
 
                         {{-- Employee --}}
-                        @if(auth('tenant')->user()->role === 'employee')
+                        @if(auth('tenant')->user()->isEmployee())
                         <option value="private" @selected(old('visibility') === 'private')>Private (Only Me)</option>
                         @endif
 
                         {{-- Manager --}}
-                        @if(auth('tenant')->user()->role === 'manager')
+                        @if(auth('tenant')->user()->isManager())
                         <option value="private" @selected(old('visibility') === 'private')>Private (Only Me)</option>
                         <option value="team" @selected(old('visibility') === 'team')>Team</option>
                         @endif
 
                         {{-- Admin --}}
-                        @if(auth('tenant')->user()->role === 'admin')
+                        @if(auth('tenant')->user()->isAdmin())
                         <option value="private" @selected(old('visibility') === 'private')>Private (Only Me)</option>
                         <option value="org" @selected(old('visibility') === 'org')>Organization</option>
                         @endif

@@ -6,7 +6,7 @@
 
 @php
 $user = Auth::guard('tenant')->user();
-$isAdmin = $user && $user->role === 'admin';
+$isAdmin = $user && $user->isAdmin();
 $teamCount = $teams->count();
 @endphp
 
@@ -108,7 +108,7 @@ $teamCount = $teams->count();
                             </button>
 
                             <a
-                                href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'teamId' => $team->id ]) }}"
+                                href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'team' => $team->id ]) }}"
                                 title="Edit Team"
                                 aria-label="Edit team"
                                 class="rounded p-1 transition hover:bg-slate-200">
@@ -159,7 +159,7 @@ $teamCount = $teams->count();
                 </button>
 
                 <a
-                    href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'teamId' => $team->id ]) }}"
+                    href="{{ route('teams.edit', ['tenant' => request()->route('tenant'), 'team' => $team->id ]) }}"
                     title="Edit Team"
                     aria-label="Edit team"
                     class="rounded p-1 transition hover:bg-slate-200">

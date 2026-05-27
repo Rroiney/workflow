@@ -104,10 +104,7 @@ $docCount = $documents->count();
                 @forelse($documents as $doc)
                 @php
                 $user = auth('tenant')->user();
-                $canDelete =
-                ($user->role === 'employee' && $doc->visibility === 'private' && $doc->uploaded_by === $user->id)
-                || ($user->role === 'manager' && in_array($doc->visibility, ['private', 'team']) && $doc->uploaded_by === $user->id)
-                || ($user->role === 'admin');
+                $canDelete = $user->can('delete', $doc);
                 @endphp
 
                 <tr
@@ -145,6 +142,7 @@ $docCount = $documents->count();
 
                             <a
                                 href="{{ route('documents.download', ['tenant' => request()->route('tenant'), 'document' => $doc->id]) }}"
+                                data-skip-loader="true"
                                 title="Download"
                                 aria-label="Download document"
                                 class="rounded p-1 transition hover:bg-slate-200">
@@ -189,10 +187,7 @@ $docCount = $documents->count();
         @forelse($documents as $doc)
         @php
         $user = auth('tenant')->user();
-        $canDelete =
-        ($user->role === 'employee' && $doc->visibility === 'private' && $doc->uploaded_by === $user->id)
-        || ($user->role === 'manager' && in_array($doc->visibility, ['private', 'team']) && $doc->uploaded_by === $user->id)
-        || ($user->role === 'admin');
+        $canDelete = $user->can('delete', $doc);
         @endphp
         <article
             x-show="matches(@js(strtolower($doc->title . ' ' . ($doc->uploader?->name ?? 'system'))), '{{ $doc->visibility }}')"
@@ -226,6 +221,7 @@ $docCount = $documents->count();
 
                 <a
                     href="{{ route('documents.download', ['tenant' => request()->route('tenant'), 'document' => $doc->id]) }}"
+                    data-skip-loader="true"
                     title="Download"
                     aria-label="Download document"
                     class="rounded p-1 transition hover:bg-slate-200">

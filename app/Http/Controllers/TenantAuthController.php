@@ -2,31 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Actions\Tenant\AuthenticateTenantUserAction;
+use App\Http\Requests\Tenant\Auth\LoginTenantRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class TenantAuthController extends Controller
 {
-    public function showLogin($tenant)
+    public function showLogin(string $tenant): View
     {
         return view('tenant.login', compact('tenant'));
     }
 
-    public function login(Request $request, $tenant)
+    public function login(
+        LoginTenantRequest $request,
+        AuthenticateTenantUserAction $authenticateTenantUserAction,
+        string $tenant
+    ): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'remember' => 'nullable|boolean',
-        ]);
-
-        $remember = $request->boolean('remember');
-        unset($credentials['remember']);
-
-        if (Auth::guard('tenant')->attempt($credentials, $remember)) {
-            // ✅ REQUIRED
-            $request->session()->regenerate();
-
+        if ($authenticateTenantUserAction->execute($request)) {
             return redirect()->route('home', ['tenant' => $tenant]);
         }
 
@@ -35,7 +30,7 @@ class TenantAuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request, $tenant)
+    public function logout(\Illuminate\Http\Request $request, string $tenant): RedirectResponse
     {
         Auth::guard('tenant')->logout();
 

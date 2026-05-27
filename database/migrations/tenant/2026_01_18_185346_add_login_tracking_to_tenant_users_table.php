@@ -8,16 +8,29 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::connection('tenant')->table('users', function (Blueprint $table) {
-            $table->timestamp('last_login_at')->nullable();
-            $table->string('last_login_ip', 45)->nullable();
-        });
+        if (!Schema::connection('tenant')->hasColumn('users', 'last_login_at')) {
+            Schema::connection('tenant')->table('users', function (Blueprint $table) {
+                $table->timestamp('last_login_at')->nullable();
+            });
+        }
+
+        if (!Schema::connection('tenant')->hasColumn('users', 'last_login_ip')) {
+            Schema::connection('tenant')->table('users', function (Blueprint $table) {
+                $table->string('last_login_ip', 45)->nullable();
+            });
+        }
     }
 
     public function down(): void
     {
         Schema::connection('tenant')->table('users', function (Blueprint $table) {
-            $table->dropColumn(['last_login_at', 'last_login_ip']);
+            if (Schema::connection('tenant')->hasColumn('users', 'last_login_ip')) {
+                $table->dropColumn('last_login_ip');
+            }
+
+            if (Schema::connection('tenant')->hasColumn('users', 'last_login_at')) {
+                $table->dropColumn('last_login_at');
+            }
         });
     }
 };

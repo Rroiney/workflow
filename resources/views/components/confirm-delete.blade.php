@@ -10,10 +10,7 @@
         </h3>
 
         <p class="text-sm text-slate-600 mb-5">
-            Are you sure you want to delete this?
-            <span class="font-medium text-slate-800"
-                x-text="confirmLabel"></span>
-            <br>
+            Are you sure you want to delete this item?
             This action cannot be undone.
         </p>
 

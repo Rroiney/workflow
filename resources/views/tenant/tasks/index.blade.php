@@ -151,6 +151,9 @@ $taskCount = $tasks->count();
 
             <tbody>
                 @forelse($tasks as $task)
+                @php
+                $canUpdateStatus = $user->can('updateStatus', $task);
+                @endphp
                 <tr
                     x-show="matches(@js(strtolower($task->title . ' ' . $task->users->pluck('name')->join(' '))), '{{ $task->status }}')"
                     x-cloak
@@ -174,7 +177,7 @@ $taskCount = $tasks->count();
                     </td>
 
                     <td class="p-3">
-                        @if($isManagerOrAdmin)
+                        @if($canUpdateStatus)
                         <form method="POST" action="{{ route('tasks.status', ['tenant' => request()->route('tenant'),'task' => $task->id]) }}">
                             @csrf
                             <select
@@ -284,6 +287,9 @@ $taskCount = $tasks->count();
     {{-- ================= TASK CARDS (MOBILE) ================= --}}
     <div class="space-y-3 md:hidden">
         @forelse($tasks as $task)
+        @php
+        $canUpdateStatus = $user->can('updateStatus', $task);
+        @endphp
         <article
             x-show="matches(@js(strtolower($task->title . ' ' . $task->users->pluck('name')->join(' '))), '{{ $task->status }}')"
             x-cloak
@@ -330,8 +336,8 @@ $taskCount = $tasks->count();
 
             <div class="mt-3 flex items-center justify-between gap-3">
                 <div>
-                    @if($isManagerOrAdmin)
-                    <form method="POST" action="/org/{{ request()->route('tenant') }}/tasks/{{ $task->id }}/status">
+                    @if($canUpdateStatus)
+                    <form method="POST" action="{{ route('tasks.status', ['tenant' => request()->route('tenant'), 'task' => $task->id]) }}">
                         @csrf
                         <select
                             name="status"

@@ -47,11 +47,11 @@ Route::prefix('org/{tenant}')
         Route::middleware(['auth:tenant', 'tenant.role:admin'])->group(function () {
 
             // ---------------- TEAMS ----------------
-            Route::get('/teams/{teamId}/edit', [TenantTeamController::class, 'edit'])
+            Route::get('/teams/{team}/edit', [TenantTeamController::class, 'edit'])
                 ->name('teams.edit');
 
             // Update team (PUT)
-            Route::put('/teams/{teamId}', [TenantTeamController::class, 'update'])
+            Route::put('/teams/{team}', [TenantTeamController::class, 'update'])
                 ->name('teams.update');
 
             // List teams
@@ -102,17 +102,8 @@ Route::prefix('org/{tenant}')
                 ->middleware('tenant.role:admin,manager')
                 ->name('tasks.destroy');
 
-            Route::get('/api/tasks/{task}', function ($tenant, \App\Models\Task $task) {
-
-                return response()->json([
-                    'title' => $task->title,
-                    'description' => $task->description,
-                    'status' => ucfirst(str_replace('_', ' ', $task->status)),
-                    'assignees' => $task->users->pluck('name')->join(', '),
-                    'updated_by' => $task->creator?->name ?? 'System',
-                    'updated_at' => $task->updated_at->format('d M Y, h:i A'),
-                ]);
-            })->middleware('auth:tenant');
+            Route::get('/api/tasks/{task}', [TenantTaskController::class, 'showApi'])
+                ->middleware('auth:tenant');
 
 
             // ---------------- LEAVES ----------------

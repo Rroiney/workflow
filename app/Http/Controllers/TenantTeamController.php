@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tenant\CreateTeamAction;
+use App\Actions\Tenant\UpdateTeamAction;
+use App\Http\Requests\Tenant\Teams\StoreTeamRequest;
+use App\Http\Requests\Tenant\Teams\UpdateTeamRequest;
 use App\Models\Team;
 use App\Models\TenantUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class TenantTeamController extends Controller
 {
@@ -15,18 +18,17 @@ class TenantTeamController extends Controller
      * - Admin: all teams
      * - Manager: only teams assigned to them
      */
-    public function index()
+    public function index(): View
     {
         $user = Auth::guard('tenant')->user();
+        $this->authorize('viewAny', Team::class);
 
-        if ($user->role === 'admin') {
+        if ($user->isAdmin()) {
             $teams = Team::with('manager')->get();
-        } elseif ($user->role === 'manager') {
+        } else {
             $teams = Team::with('manager')
                 ->where('manager_id', $user->id)
                 ->get();
-        } else {
-            abort(403, 'Unauthorized');
         }
 
         return view('tenant.teams.index', compact('teams'));
@@ -36,19 +38,11 @@ class TenantTeamController extends Controller
      * Show create team form
      * - Admin only
      */
-    public function create()
+    public function create(): View
     {
-        $user = Auth::guard('tenant')->user();
+        $this->authorize('create', Team::class);
 
-        // Admin only
-        if ($user->role !== 'admin') {
-            abort(403);
-        }
-
-        // Only managers can be team managers
         $managers = TenantUser::where('role', 'manager')->get();
-
-        // Only employees can be assigned to teams
         $employees = TenantUser::where('role', 'employee')->get();
 
         return view('tenant.teams.create', compact('managers', 'employees'));
@@ -60,29 +54,10 @@ class TenantTeamController extends Controller
      * Store team
      * - Admin only
      */
-    public function store(Request $request)
+    public function store(StoreTeamRequest $request, CreateTeamAction $createTeamAction)
     {
-        $user = Auth::guard('tenant')->user();
-
-        if ($user->role !== 'admin') {
-            abort(403, 'Only admin can create teams');
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'manager_id' => 'required|exists:tenant.users,id',
-            'users' => 'array',
-            'users.*' => 'exists:tenant.users,id',
-        ]);
-
-        $team = Team::create([
-            'name' => $request->name,
-            'manager_id' => $request->manager_id,
-            'created_by' => $user->id, // track admin creator
-        ]);
-
-        // Assign employees to team (optional)
-        $team->users()->sync($request->users ?? []);
+        $this->authorize('create', Team::class);
+        $createTeamAction->execute($request);
 
         return redirect()
             ->route('teams.index', ['tenant' => request()->route('tenant')])
@@ -93,15 +68,9 @@ class TenantTeamController extends Controller
      * Edit team
      * - Admin only
      */
-    public function edit($tenant, $teamId)
+    public function edit(string $tenant, Team $team): View
     {
-        $user = Auth::guard('tenant')->user();
-
-        if ($user->role !== 'admin') {
-            abort(403);
-        }
-
-        $team = Team::where('id', $teamId)->firstOrFail();
+        $this->authorize('update', $team);
 
         $managers = TenantUser::where('role', 'manager')->get();
         $employees = TenantUser::where('role', 'employee')->get();
@@ -120,48 +89,15 @@ class TenantTeamController extends Controller
      * Update team
      * - Admin only
      */
-    public function update(Request $request, $tenant, $teamId)
+    public function update(
+        UpdateTeamRequest $request,
+        string $tenant,
+        Team $team,
+        UpdateTeamAction $updateTeamAction
+    )
     {
-        $team = Team::where('id', $teamId)->firstOrFail();
-        $user = Auth::guard('tenant')->user();
-
-        if ($user->role !== 'admin') {
-            abort(403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'manager_id' => 'required|exists:tenant.users,id',
-            'users' => 'array',
-            'users.*' => 'exists:tenant.users,id',
-        ]);
-
-        // Update basic team info
-        $team->update([
-            'name' => $request->name,
-            'manager_id' => $request->manager_id,
-        ]);
-
-        /**
-         * ENFORCE: ONE EMPLOYEE → ONE TEAM
-         *
-         * We remove selected employees from any other team
-         * before assigning them to this team.
-         */
-        $userIds = $request->users ?? [];
-
-        if (!empty($userIds)) {
-            foreach ($userIds as $userId) {
-                // Detach employee from any other team
-                DB::connection('tenant')
-                    ->table('team_user')
-                    ->where('user_id', $userId)
-                    ->delete();
-            }
-        }
-
-        // Attach employees to this team
-        $team->users()->sync($userIds);
+        $this->authorize('update', $team);
+        $updateTeamAction->execute($request, $team);
 
         return redirect()->route('teams.index', [
             'tenant' => request()->route('tenant')

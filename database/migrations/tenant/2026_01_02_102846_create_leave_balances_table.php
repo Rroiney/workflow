@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::connection('tenant')->hasTable('leave_balances')) {
+            return;
+        }
+
         Schema::connection('tenant')->create('leave_balances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
